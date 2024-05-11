@@ -1,0 +1,51 @@
+/* Footer styles */
+.App-footer {
+    font-size: 1rem;
+    padding: 1.2rem;
+    text-align: center;
+    font-style: italic;
+    border-top: 1px dotted #000; /* Add a dotted border at the top */
+}
+
+/* Dotted line styles */
+.divider-line {
+    border-top: 1px dotted #000;
+    width: 100%;
+    margin-top: 20px; /* Adjust as needed */
+}
+
+/* Footer content styles */
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* Contact info styles */
+.contact-info {
+    text-align: left;
+}
+
+/* Social media styles */
+.social-media {
+    text-align: right;
+}
+
+.social-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.icon {
+    font-size: 1.5rem;
+    color: #000; /* Adjust color as needed */
+}
+
+.highlighted-text {
+    color: red; /* Change to your desired color */
+    font-weight: bold; /* Make the text bold */
+    /* Add any other styles you want to apply */
+  }
+  
