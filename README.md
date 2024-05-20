@@ -1,4 +1,7 @@
 # Getting Started with Create React App
+requirements.txt
+  #to create the same enviroment run 
+     ### 'pip install -r requirements.txt'
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

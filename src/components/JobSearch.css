@@ -1,0 +1,83 @@
+.job-search-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.input-group .form-control {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.input-group .btn {
+  width: 100%;
+}
+
+@media (min-width: 576px) {
+  .input-group {
+    flex-direction: row;
+  }
+
+  .input-group .form-control {
+    margin-bottom: 0;
+    margin-right: 10px;
+    width: auto;
+  }
+
+  .input-group .btn {
+    width: auto;
+  }
+}
+
+.job-title {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.company, .location, .contract-time {
+  margin: 0;
+}
+
+.job-list-container {
+  max-height: 800px; /* Set your desired height */
+  overflow-y: auto;
+  margin-top: 20px;
+}
+
+.list-group-item {
+  padding: 15px;
+  border-radius: 5px;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.list-group-item:hover {
+  background-color: #f1f1f1;
+}
+
+@media (min-width: 768px) {
+  .job-title {
+    font-size: 1.75rem;
+  }
+}
+
+.button-group {
+  margin-top: 10px;
+}
+
+.button-group .btn {
+  margin-right: 10px;
+}
+
+.button-group .btn:last-child {
+  margin-right: 0;
+}

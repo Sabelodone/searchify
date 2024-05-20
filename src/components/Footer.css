@@ -1,51 +1,67 @@
 /* Footer styles */
-.App-footer {
-    font-size: 1rem;
-    padding: 1.2rem;
+footer {
+    background-color: whitesmoke;
+    padding: 2rem;
     text-align: center;
-    font-style: italic;
-    border-top: 1px dotted #000; /* Add a dotted border at the top */
 }
 
-/* Dotted line styles */
+/* Divider line styles */
 .divider-line {
-    border-top: 1px dotted #000;
-    width: 100%;
-    margin-top: 20px; /* Adjust as needed */
+    border-top: 1px dashed #ccc;
+    margin-bottom: 1rem;
 }
 
 /* Footer content styles */
 .footer-content {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: auto;
+    flex-wrap: wrap;
 }
 
 /* Contact info styles */
 .contact-info {
+    flex: 1 1 300px;
     text-align: left;
+    margin-bottom: 1rem;
 }
 
 /* Social media styles */
 .social-media {
+    flex: 1 1 200px;
     text-align: right;
 }
 
+/* Social icons styles */
 .social-icons {
-    display: flex;
-    gap: 10px;
+    display: inline-flex;
 }
 
-.icon {
+.social-icons .icon {
     font-size: 1.5rem;
-    color: #000; /* Adjust color as needed */
+    margin-left: 1rem;
 }
 
+/* Highlighted text styles */
 .highlighted-text {
-    color: red; /* Change to your desired color */
-    font-weight: bold; /* Make the text bold */
-    /* Add any other styles you want to apply */
-  }
-  
+    color: #e0354b;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .contact-info,
+    .social-media {
+        flex: none;
+        width: auto;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .social-media {
+        margin-top: 1rem;
+    }
+}

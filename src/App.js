@@ -1,22 +1,25 @@
+// App.js
 import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 
-// Importing components
 import HomeScreen from './components/HomeScreen';
-import Header from './components/Header'; // Import Header component
-import Footer from './components/Footer'; // Import Footer component
-import 'bootstrap/dist/css/bootstrap.min.css';
-
+import Header from './components/Header';
+import Footer from './components/Footer';
+import JobSearch from './components/JobSearch';
 
 function App() {
   return (
-    <div className="App">
-      {/* Rendering components */}
-      <Header /> {/* Render Header component */}
-      <HomeScreen />
-
-      <Footer /> {/* Render Footer component */}
-    </div>
+    <Router>
+      <div className="App">
+        <Header />
+        <Routes>
+          <Route path="/" element={<HomeScreen />} />
+          <Route path="/job-search" element={<JobSearch />} />
+        </Routes>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
