@@ -1,63 +1,73 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // Import Link component
-import './JobSearch.css'; // Import your custom CSS
+// JobSearch.js
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import './JobSearch.css';
+
+const appId = process.env.REACT_APP_ADZUNA_APP_ID;
+const appKey = process.env.REACT_APP_ADZUNA_APP_KEY;
 
 const JobSearch = () => {
-  const [jobs, setJobs] = useState([]);
+    const [jobs, setJobs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const searchQuery = queryParams.get('query');
 
-  useEffect(() => {
-    const appId = process.env.REACT_APP_ADZUNA_APP_ID;
-    const appKey = process.env.REACT_APP_ADZUNA_APP_KEY;
-    const apiUrl = `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${appId}&app_key=${appKey}&results_per_page=10`;
+    useEffect(() => {
+        const fetchJobs = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch(`https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${appId}&app_key=${appKey}&results_per_page=10&what=${encodeURIComponent(searchQuery)}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setJobs(data.results); // Assuming the API returns jobs in `data.results`
+            } catch (error) {
+                setError(error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => setJobs(data.results))
-      .catch(error => console.error('Error fetching jobs:', error));
-  }, []);
+        if (searchQuery) {
+            fetchJobs();
+        }
+    }, [searchQuery]);
 
-  const handleViewClick = (jobId) => {
-    console.log('View job', jobId);
-    // Implement the logic to view job details here
-  };
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
-  const handleApplyClick = (jobId) => {
-    console.log('Apply for job', jobId);
-    // Implement the logic to apply for job here
-  };
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
 
-  return (
-    <div className="container job-search-container">
-      <header className="my-4 text-center">
-        <Link to="/" className="home-link">
-          {/* Optionally add your logo or home link here */}
-        </Link>
-        <div className="input-group mt-3">
-          <input type="text" className="form-control" placeholder="Search for jobs..." />
-          <button className="btn btn-primary">Search</button>
+    return (
+        <div className="job-search-container">
+            <div className="overlay"></div>
+            <div className="content">
+                <h2>Job Search Results for "{searchQuery}"</h2>
+                <ul className="job-list">
+                    {jobs.map((job) => (
+                        <li key={job.id} className="job-list-item">
+                            <h3>{job.title}</h3>
+                            <p className="company">{job.company.display_name}</p>
+                            <p className="location">{job.location.display_name}</p>
+                            <p className="contract-time">{job.contract_time}</p>
+                            <div className="button-group">
+                                <button className="btn btn-primary">View</button>
+                                <button className="btn btn-success">Apply</button>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
-      </header>
-      
-      <div className="job-list-container">
-        <ul className="list-group">
-          {jobs.map(job => (
-            <li key={job.id} className="list-group-item">
-              <h2 className="job-title">{job.title}</h2>
-              <p className="company">{job.company.display_name}</p>
-              <p className="location">{job.location.display_name}</p>
-              <p className="contract-time">{job.contract_time}</p>
-              <div className="button-group">
-                <button className="btn btn-secondary" onClick={() => handleViewClick(job.id)}>View</button>
-                <button className="btn btn-primary" onClick={() => handleApplyClick(job.id)}>Apply</button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default JobSearch;
-
 
