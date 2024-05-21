@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { FaHome, FaBell, FaBriefcase, FaUser } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Header.css';
 
 function Header() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
+    };
+
+    const goToHome = () => {
+        navigate('/');
     };
 
     const goToJobSearch = () => {
@@ -20,9 +25,11 @@ function Header() {
         <header>
             <h1>Searchify</h1>
             <div className="button-group">
-                <button><FaHome /></button>
+                <button onClick={goToHome}><FaHome /></button>
                 <button><FaBell /></button>
-                <button onClick={goToJobSearch}><FaBriefcase /></button>
+                {location.pathname !== '/job-search' && (
+                    <button onClick={goToJobSearch}><FaBriefcase /></button>
+                )}
                 <div className="dropdown">
                     <button
                         className="dropdown-toggle"
@@ -51,3 +58,4 @@ function Header() {
 }
 
 export default Header;
+
