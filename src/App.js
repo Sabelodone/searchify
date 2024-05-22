@@ -7,6 +7,7 @@ import HomeScreen from './components/HomeScreen';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import JobSearch from './components/JobSearch';
+import JobDetails from './components/JobDetails';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomeScreen />} />
           <Route path="/job-search" element={<JobSearch />} />
+          <Route path="/job-details/:jobId" element={<JobDetails />} />
         </Routes>
         <Footer />
       </div>
@@ -24,3 +26,4 @@ function App() {
 }
 
 export default App;
+

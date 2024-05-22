@@ -1,0 +1,30 @@
+/* JobDetails.css */
+
+.job-details-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.job-details-container h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.job-details-container p {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.job-details-container .company,
+.job-details-container .location,
+.job-details-container .contract-time {
+  font-weight: bold;
+}
+
+.job-details-container .btn {
+  margin-top: 20px;
+}

@@ -1,6 +1,6 @@
 // JobSearch.js
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './JobSearch.css';
 
 const appId = process.env.REACT_APP_ADZUNA_APP_ID;
@@ -12,6 +12,7 @@ const JobSearch = () => {
     const [error, setError] = useState(null);
     
     const location = useLocation();
+    const navigate = useNavigate();
     const queryParams = new URLSearchParams(location.search);
     const searchQuery = queryParams.get('query');
 
@@ -50,16 +51,16 @@ const JobSearch = () => {
             <div className="overlay"></div>
             <div className="content">
                 <h2>Job Search Results for "{searchQuery}"</h2>
-                <ul className="job-list">
+                <ul className="job-list list-group">
                     {jobs.map((job) => (
-                        <li key={job.id} className="job-list-item">
+                        <li key={job.id} className="job-list-item list-group-item">
                             <h3>{job.title}</h3>
                             <p className="company">{job.company.display_name}</p>
                             <p className="location">{job.location.display_name}</p>
                             <p className="contract-time">{job.contract_time}</p>
                             <div className="button-group">
-                                <button className="btn btn-primary">View</button>
-                                <button className="btn btn-success">Apply</button>
+                                <button className="btn btn-primary" onClick={() => navigate(`/job-details/${job.id}`)}>View</button>
+                                <button className="btn btn-success" onClick={() => window.location.href = job.redirect_url}>Apply</button>
                             </div>
                         </li>
                     ))}
