@@ -1,10 +1,6 @@
-// JobDetails.js
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './JobDetails.css';
-
-const appId = process.env.REACT_APP_ADZUNA_APP_ID;
-const appKey = process.env.REACT_APP_ADZUNA_APP_KEY;
 
 const JobDetails = () => {
     const { jobId } = useParams();
@@ -16,17 +12,14 @@ const JobDetails = () => {
         const fetchJobDetails = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`https://api.adzuna.com/v1/api/jobs/us/${jobId}?app_id=${appId}&app_key=${appKey}`);
+                const response = await fetch(`/api/v1/api/jobs/us/${jobId}?app_id=${process.env.REACT_APP_ADZUNA_APP_ID}&app_key=${process.env.REACT_APP_ADZUNA_APP_KEY}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
-                if (!data || Object.keys(data).length === 0) {
-                    throw new Error('No job details available');
-                }
                 setJob(data);
             } catch (error) {
-                setError(error.message);
+                setError(error);
             } finally {
                 setLoading(false);
             }
@@ -40,7 +33,7 @@ const JobDetails = () => {
     }
 
     if (error) {
-        return <div>Error: {error}</div>;
+        return <div>Error: {error.message}</div>;
     }
 
     if (!job) {
@@ -54,7 +47,7 @@ const JobDetails = () => {
             <p className="company">{job.company.display_name}</p>
             <p className="location">{job.location.display_name}</p>
             <p className="contract-time">{job.contract_time}</p>
-            <a href={job.redirect_url} className="btn btn-success" target="_blank" rel="noopener noreferrer">Apply</a>
+            <a href={job.redirect_url} className="btn btn-success">Apply</a>
         </div>
     );
 };

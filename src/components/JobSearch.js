@@ -12,15 +12,15 @@ const JobSearch = () => {
     const [error, setError] = useState(null);
     
     const location = useLocation();
-    const navigate = useNavigate();
     const queryParams = new URLSearchParams(location.search);
     const searchQuery = queryParams.get('query');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchJobs = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${appId}&app_key=${appKey}&results_per_page=10&what=${encodeURIComponent(searchQuery)}`);
+                const response = await fetch(`/api/v1/api/jobs/us/search/1?app_id=${appId}&app_key=${appKey}&results_per_page=10&what=${encodeURIComponent(searchQuery)}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -38,6 +38,14 @@ const JobSearch = () => {
         }
     }, [searchQuery]);
 
+    const handleView = (jobId) => {
+        navigate(`/job-details/${jobId}`);
+    };
+
+    const handleApply = (jobUrl) => {
+        window.open(jobUrl, '_blank');
+    };
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -51,16 +59,16 @@ const JobSearch = () => {
             <div className="overlay"></div>
             <div className="content">
                 <h2>Job Search Results for "{searchQuery}"</h2>
-                <ul className="job-list list-group">
+                <ul className="job-list">
                     {jobs.map((job) => (
-                        <li key={job.id} className="job-list-item list-group-item">
+                        <li key={job.id} className="job-list-item">
                             <h3>{job.title}</h3>
                             <p className="company">{job.company.display_name}</p>
                             <p className="location">{job.location.display_name}</p>
                             <p className="contract-time">{job.contract_time}</p>
                             <div className="button-group">
-                                <button className="btn btn-primary" onClick={() => navigate(`/job-details/${job.id}`)}>View</button>
-                                <button className="btn btn-success" onClick={() => window.location.href = job.redirect_url}>Apply</button>
+                                <button className="btn btn-primary" onClick={() => handleView(job.id)}>View</button>
+                                <button className="btn btn-success" onClick={() => handleApply(job.redirect_url)}>Apply</button>
                             </div>
                         </li>
                     ))}
@@ -71,4 +79,3 @@ const JobSearch = () => {
 };
 
 export default JobSearch;
-
