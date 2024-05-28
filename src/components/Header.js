@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { FaHome, FaBell, FaBriefcase, FaUser } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Register from './Register';
+import Login from './Login';
 import './Header.css';
 
 function Header() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [registerModalOpen, setRegisterModalOpen] = useState(false);
+    const [loginModalOpen, setLoginModalOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -21,8 +25,18 @@ function Header() {
         navigate('/job-search');
     };
 
+    const openRegisterModal = () => {
+        setRegisterModalOpen(true);
+        setDropdownOpen(false);
+    };
+
+    const openLoginModal = () => {
+        setLoginModalOpen(true);
+        setDropdownOpen(false);
+    };
+
     return (
-        <header>
+        <header className="header">
             <h1>Searchify</h1>
             <div className="button-group">
                 <button onClick={goToHome}><FaHome /></button>
@@ -42,20 +56,31 @@ function Header() {
                         <FaUser />
                     </button>
                     <div className={`dropdown-menu ${dropdownOpen ? 'show' : ''}`} aria-labelledby="dropdownMenuButton">
-                        <button id="profile" className="dropdown-item" type="button">Profile</button>
-                        <button id="settings" className="dropdown-item" type="button">Settings</button>
+                        <button 
+                            id="Register" 
+                            className="dropdown-item" 
+                            type="button" 
+                            onClick={openRegisterModal}
+                        >
+                            Register
+                        </button>
                         <div className="dropdown-divider"></div>
-                        <button id="logout" className="dropdown-item" type="button">Logout</button>
-                        <button id="resume-cv-upload" className="dropdown-item" type="button">Resume/CV Upload</button>
-                        <button id="saved-jobs" className="dropdown-item" type="button">Saved Jobs</button>
-                        <button id="applied-jobs" className="dropdown-item" type="button">Applied Jobs</button>
-                        <button id="recommended-jobs" className="dropdown-item" type="button">Recommended Jobs</button>
+                        <button 
+                            id="LogIn" 
+                            className="dropdown-item" 
+                            type="button" 
+                            onClick={openLoginModal}
+                        >
+                            Log In
+                        </button>
                     </div>
                 </div>
             </div>
+
+            <Register show={registerModalOpen} handleClose={() => setRegisterModalOpen(false)} />
+            <Login show={loginModalOpen} handleClose={() => setLoginModalOpen(false)} />
         </header>
     );
 }
 
 export default Header;
-
