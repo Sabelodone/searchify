@@ -1,15 +1,35 @@
 /* Header styles */
-header {
+.header {
     font-size: 1.4rem;
     color: #e0354b;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 1rem;
+    position: relative;
+    background: #fff; /* Added background to the header to ensure visibility */
+    z-index: 1000; /* Ensure header is on top */
+}
+
+/* Logo styles */
+.logo {
+    margin: 0;
+}
+
+/* Menu toggle button styles */
+.menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #e0354b;
+    font-size: 1.5rem;
+    cursor: pointer;
 }
 
 /* Button group styles */
 .button-group {
-    margin-left: auto; /* Align the button group to the right */
+    display: flex;
+    align-items: center;
 }
 
 /* Button styles */
@@ -77,19 +97,41 @@ header {
 
 /* Responsive styles */
 @media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        align-items: stretch;
+    .menu-toggle {
+        display: block;
     }
 
     .button-group {
-        margin-left: 0;
-        margin-top: 1rem;
+        display: none;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 0%;
+        
+        position: absolute;
+        top: 0%;
+        left: 0;
+        padding: 1rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+        z-index: 2000; /* Ensure button group is on top */
+    }
+
+    .button-group.show {
         display: flex;
-        justify-content: center;
     }
 
     .button-group button {
-        margin: 0 5px;
+        width: 100%;
+        margin: 5px 0;
+        text-align: left; /* Align icons to the left */
+    }
+
+    .dropdown {
+        width: 100%; /* Ensure dropdown takes full width in mobile view */
+    }
+
+    .dropdown-menu {
+        position: static; /* Position dropdown statically */
+        width: 100%; /* Ensure dropdown takes full width in mobile view */
+        box-shadow: none; /* Remove box-shadow for dropdown */
     }
 }

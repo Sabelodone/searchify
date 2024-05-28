@@ -11,16 +11,22 @@ function Footer() {
             <div className="footer-content">
                 <div className="contact-info">
                     <h4>Contact Us</h4>
-                    <p>South Hills Lifestle Estate, Johhanesburg, South Africa</p>
-                    <p>Phone: +72 746 422 396</p>
-                    <p>Email: Sabelozondo825@gmail.com</p>
+                    <p>North Hills Lifestyle Estate, Germiston, South Africa</p>
+                    <p>Phone: +72 76 412 376</p>
+                    <p>Email: Searchify@gmail.com</p>
                 </div>
                 <div className="social-media">
                     <h4>Follow <span className="highlighted-text">Us</span></h4>
                     <div className="social-icons">
-                        <FaFacebook className="icon" />
-                        <FaTwitter className="icon" />
-                        <FaInstagram className="icon" />
+                        <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
+                            <FaFacebook className="icon" />
+                        </a>
+                        <a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer">
+                            <FaTwitter className="icon" />
+                        </a>
+                        <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
+                            <FaInstagram className="icon" />
+                        </a>
                     </div>
                 </div>
             </div>
@@ -30,3 +36,4 @@ function Footer() {
 }
 
 export default Footer;
+
