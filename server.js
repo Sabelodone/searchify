@@ -1,28 +1,42 @@
 const express = require('express');
 const cors = require('cors');
-const request = require('request');
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const axios = require('axios');
 
-dotenv.config({ path: './.env' })
+dotenv.config({ path: './.env' });
 
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+  origin: 'http://localhost:3000', // your frontend URL
+  credentials: true, // allow credentials (cookies, authorization headers, etc.)
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session({
+  secret: process.env.SECRET_KEY,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false, httpOnly: true } // Set to true if using https
+}));
 
 const port = 5000;
 
-// Database connection
 const db = mysql.createConnection({
-  host: 'localhost',
-   user: 'root',
-   password: '',
-   database: 'searchify_db',
- });
+  host: process.env.DATABASE_HOST,
+  user: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PWD,
+  database: process.env.DATABASE_NAME,
+});
 
- db.connect((err) => {
+db.connect((err) => {
   if (err) {
     console.error('Error connecting to the database:', err.stack);
     return;
@@ -30,126 +44,115 @@ const db = mysql.createConnection({
   console.log('Connected to the database.');
 });
 
-//app.get('/api/jobs', (req, res) => {
-//  const query = 'SELECT * FROM jobs';
-//  db.query(query, (err, results) => {
-//    if (err) {
-//      res.status(500).json({ message: err.message });
-//      return;
-//    }
-//    res.json(results);
-//  });
-//});
-
-//app.post('/api/jobs', (req, res) => {
-//  const { title, description, company, location } = req.body;
-//  const query = 'INSERT INTO jobs (title, description, company, location) VALUES (?, ?, ?, ?)';
-//  db.query(query, [title, description, company, location], (err, results) => {
-//    if (err) {
-//      res.status(500).json({ message: err.message });
-//      return;
-//    }
-//    res.status(201).json({ id: results.insertId, title, description, company, location });
-//  });
-//});
-
-//app.get('/api/jobs/:id', (req, res) => {
-//  const { id } = req.params;
-//  const query = 'SELECT * FROM jobs WHERE id = ?';
-//  db.query(query, [id], (err, results) => {
-//    if (err) {
-//      res.status(500).json({ message: err.message });
-//      return;
-//    }
-//    if (results.length === 0) {
-//      res.status(404).json({ message: 'Job not found' });
-//      return;
-//    }
-//    res.json(results[0]);
-//  });
-//});
-
-// Define API endpoints for users
 app.post('/api/users/register', async (req, res) => {
   const { username, email, password } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
 
-  const query = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
-  db.query(query, [username, email, hashedPassword], (err, results) => {
-    if (err) {
-      res.status(500).json({ message: err.message });
-      return;
-    }
-    res.status(201).json({ id: results.insertId, username, email });
-  });
+  if (!username || !email || !password) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    const checkEmailQuery = 'SELECT * FROM users WHERE email = ?';
+    db.query(checkEmailQuery, [email], async (err, results) => {
+      if (err) {
+        console.error('Error checking email:', err);
+        return res.status(500).json({ message: 'Database error' });
+      }
+
+      if (results.length > 0) {
+        return res.status(409).json({ message: 'User email already exists, please log in' });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const insertUserQuery = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
+
+      db.query(insertUserQuery, [username, email, hashedPassword], (err, results) => {
+        if (err) {
+          console.error('Error inserting user into database:', err);
+          return res.status(500).json({ message: 'Database error' });
+        }
+        console.log('User registered successfully:', { id: results.insertId, username, email });
+        res.status(201).json({ id: results.insertId, username, email });
+      });
+    });
+  } catch (error) {
+    console.error('Error during registration:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 app.post('/api/users/login', (req, res) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
   const query = 'SELECT * FROM users WHERE email = ?';
-  
   db.query(query, [email], async (err, results) => {
     if (err) {
-      res.status(500).json({ message: err.message });
-      return;
+      console.error('Error querying user:', err);
+      return res.status(500).json({ message: 'Database error' });
     }
+
     if (results.length === 0) {
-      res.status(404).json({ message: 'User not found' });
-      return;
+      console.warn('User not found for email:', email);
+      return res.status(404).json({ message: 'User not found' });
     }
 
     const user = results[0];
     const isPasswordValid = await bcrypt.compare(password, user.password);
+
     if (!isPasswordValid) {
-      res.status(401).json({ message: 'Invalid password' });
-      return;
+      console.warn('Invalid password attempt for user:', email);
+      return res.status(401).json({ message: 'Invalid password' });
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, 'your_jwt_secret', { expiresIn: '1h' });
-    res.json({ token, user: { id: user.id, username: user.username, email: user.email } });
+    req.session.user = user;
+    console.log('User logged in successfully:', { id: user.id, username: user.username, email: user.email });
+    res.json({ user: { id: user.id, username: user.username, email: user.email } });
   });
 });
 
-app.get('/api/users/:id', (req, res) => {
-  const { id } = req.params;
-  const query = 'SELECT * FROM users WHERE id = ?';
-  db.query(query, [id], (err, results) => {
+app.get('/api/logout', (req, res) => {
+  req.session.destroy((err) => {
     if (err) {
-      res.status(500).json({ message: err.message });
-      return;
+      console.error('Error during logout:', err);
+      return res.status(500).json({ message: 'Logout failed' });
     }
-    if (results.length === 0) {
-      res.status(404).json({ message: 'User not found' });
-      return;
-    }
-    res.json(results[0]);
+    res.clearCookie('connect.sid');
+    console.log('User logged out successfully');
+    res.json({ message: 'Logged out successfully' });
   });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something went wrong!');
+app.get('/api/current-user', (req, res) => {
+  if (req.session.user) {
+    console.log('Current user:', req.session.user);
+    res.json(req.session.user);
+  } else {
+    console.warn('No user logged in');
+    res.status(401).json({ message: 'Not logged in' });
+  }
 });
 
-// Proxy API requests
 app.use('/api', async (req, res) => {
   const apiUrl = `https://api.adzuna.com${req.originalUrl.replace('/api', '')}`;
   try {
     const response = await axios.get(apiUrl);
     res.json(response.data);
   } catch (error) {
-    console.error('Error in request:', error);
+    console.error('Error in request to Adzuna API:', error);
     res.status(500).send('Error while fetching data from Adzuna API.');
   }
 });
 
-// Route for signUp/signIn
-app.get('/signUp/signIn', (req, res) => {
-  res.send("<h1> Home </h1>"); // Correct the HTML
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('An error occurred:', err);
+  res.status(500).json({ message: 'Internal Server Error' });
 });
 
-// Start server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

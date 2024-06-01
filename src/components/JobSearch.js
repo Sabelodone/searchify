@@ -20,7 +20,7 @@ const JobSearch = () => {
         const fetchJobs = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`/api/v1/api/jobs/us/search/1?app_id=${appId}&app_key=${appKey}&results_per_page=10&what=${encodeURIComponent(searchQuery)}`);
+                const response = await fetch(`http://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${appId}&app_key=${appKey}&results_per_page=10&what=${encodeURIComponent(searchQuery)}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }

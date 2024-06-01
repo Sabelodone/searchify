@@ -1,6 +1,6 @@
-// components/Register.js
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
+import axios from 'axios';
 
 function Register({ show, handleClose }) {
     const [username, setUsername] = useState('');
@@ -8,11 +8,37 @@ function Register({ show, handleClose }) {
     const [confirmEmail, setConfirmEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
-        // Registration process logic
-        console.log('Registering with', username, email, confirmEmail, password, confirmPassword);
+        setError('');  // Reset the error message
+        if (email !== confirmEmail) {
+            setError("Emails do not match");
+            return;
+        }
+        if (password !== confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
+        try {
+            const response = await axios.post('http://localhost:5000/api/users/register', {
+                username,
+                email,
+                password,
+            });
+            if (response.status === 201) {
+                handleClose();
+                window.location.reload();
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 409) {
+                setError("User email already exists, please log in");
+            } else {
+                console.error('Error registering user:', error);
+                setError('Registration failed. Please try again.');
+            }
+        }
     };
 
     return (
@@ -67,6 +93,7 @@ function Register({ show, handleClose }) {
                             required
                         />
                     </Form.Group>
+                    {error && <p className="text-danger">{error}</p>}
                     <Button variant="primary" type="submit">
                         Register
                     </Button>

@@ -12,7 +12,7 @@ const JobDetails = () => {
         const fetchJobDetails = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`/api/v1/api/jobs/us/${jobId}?app_id=${process.env.REACT_APP_ADZUNA_APP_ID}&app_key=${process.env.REACT_APP_ADZUNA_APP_KEY}`);
+                const response = await fetch(`/v1/api/jobs/us/${jobId}?app_id=${process.env.REACT_APP_ADZUNA_APP_ID}&app_key=${process.env.REACT_APP_ADZUNA_APP_KEY}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
